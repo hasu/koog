@@ -17,7 +17,7 @@ This script requires PLT Scheme / Racket version 5.
 |#
 
 (require racket/port)
-(require koog/runtime)
+(require "runtime.rkt")
 (require "util.rkt")
 
 (stdout (current-output-port))
@@ -98,6 +98,22 @@ This script requires PLT Scheme / Racket version 5.
 (define (bytes-count-lf bstr)
   (for/fold ((count 0)) ((b bstr)) (if (equal? b lf-byte) (+ count 1) count)))
 
+;; Relative module paths tend to be dynamically resolved relative to
+;; (current-directory), so we resolve explicitly relative to this
+;; module. We could just use 'koog/runtime instead, but that relies on
+;; the collects path.
+(define runtime-module-path
+  ((current-module-name-resolver)
+   '"runtime.rkt"
+    (variable-reference->resolved-module-path
+     (#%variable-reference))
+    #f #f))
+
+;; A raw path is something that cannot appear as syntax, but will be
+;; accepted by #%require and namespace-require.
+(define runtime-module-path-name
+  (resolved-module-path-name runtime-module-path))
+
 (define (modify-data-in-stream input output filename logstream)
   (define lineno 1)
   (define modified #f)
@@ -108,9 +124,9 @@ This script requires PLT Scheme / Racket version 5.
   (define ns (make-base-namespace))
 
   (begin
-    (namespace-attach-module (current-namespace) 'koog/runtime ns)
+    (namespace-attach-module (current-namespace) runtime-module-path ns)
     (parameterize ((current-namespace ns))
-      (namespace-require 'koog/runtime)))
+      (namespace-require runtime-module-path-name)))
   
   (let loop ()
     ;; regexp-match does support matching agains input ports, which is

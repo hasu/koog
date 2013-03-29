@@ -1,4 +1,4 @@
-#lang scheme
+#lang racket
 
 ;; Utilities used internally in the implementation of Koog. Should be
 ;; considered a non-public API, subject to change at any time.

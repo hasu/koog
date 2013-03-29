@@ -1,10 +1,10 @@
-#lang scheme
+#lang racket
 
 ;; This file implements the command-line interface of Koog.
 
-(require scheme/port)
-(require scheme/cmdline)
-(require "koog.ss")
+(require racket/port)
+(require racket/cmdline)
+(require "koog.rkt")
 
 (provide main)
 

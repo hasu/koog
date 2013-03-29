@@ -1,4 +1,4 @@
-#lang scheme
+#lang racket
 
 ;; This file implements the API of Koog, a code generator in the style
 ;; of Cog. The primary difference is that the code generation
@@ -10,12 +10,12 @@
 ;; cogapp.py and whiteutils.py of Cog are a useful reference when
 ;; implementing tools such as this.
 ;; 
-;; This script requires PLT Scheme / Racket version 4 or 5.
+;; This script requires PLT Scheme / Racket version 5.
 
-(require scheme/port)
+(require racket/port)
 (require srfi/13)
-(require (lib "runtime.ss" "koog"))
-(require "util.ss")
+(require koog/runtime)
+(require "util.rkt")
 
 (stdout (current-output-port))
 (stderr (current-error-port))
@@ -106,10 +106,10 @@
   (begin
     (namespace-attach-module
      (current-namespace)
-     '(lib "runtime.ss" "koog")
+     'koog/runtime
      ns)
     (parameterize ((current-namespace ns))
-      (namespace-require '(lib "runtime.ss" "koog"))))
+      (namespace-require 'koog/runtime)))
   
   (let loop ()
     ;; regexp-match does support matching agains input ports, which is

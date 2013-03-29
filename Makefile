@@ -1,5 +1,5 @@
 BASENAME := koog
-VERSION := 1.1
+VERSION := 1.2
 URL := http://koog.contextlogger.org/
 REPO_URL := git://github.com/contextlogger/koog.git
 
@@ -24,9 +24,9 @@ info.rkt : Makefile
 	echo "(define url \"$(URL)\")" >> $@
 	echo "(define repo-url \"$(REPO_URL)\")" >> $@
 	echo "(define scribblings '((\"manual.scrbl\" ())))" >> $@
-	echo '(define primary-file "koog.ss")' >> $@
+	echo '(define primary-file "koog.rkt")' >> $@
 
-SOURCES = cli-shell.sh cli.ss emacs/koog.el index.html info.rkt INSTALL koog.ss LICENSE Makefile manual.scrbl runtime.ss tools/adjust-scribble.rb util.ss vim/koog.vimrc
+SOURCES = cli-shell.sh cli.rkt emacs/koog.el index.html info.rkt INSTALL koog.rkt LICENSE Makefile manual.scrbl runtime.rkt tools/adjust-scribble.rb util.rkt vim/koog.vimrc
 SOURCES_WITH_DIR = $(patsubst %, $(BASENAME)/%, $(SOURCES))
 
 TARBALL := dist/$(BASENAME)-$(VERSION).tar.gz

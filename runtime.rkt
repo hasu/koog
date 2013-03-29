@@ -1,4 +1,4 @@
-#lang scheme/base
+#lang racket/base
 
 ;; This module defines the "runtime library" for Koog directives.
 ;; These exports will be available without an explicit "require".

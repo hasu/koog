@@ -13,7 +13,6 @@
 ;; This script requires PLT Scheme / Racket version 5.
 
 (require racket/port)
-(require srfi/13)
 (require koog/runtime)
 (require "util.rkt")
 
@@ -63,7 +62,7 @@
 ;; namespace:: The namespace in which to evaluate the code.
 ;; filename:: The input filename, or #f for none.
 (define (evaluate-section old-section directive old-region namespace filename)
-  ;;(write-nl (list "DIRECTIVE" directive))
+  ;;(writeln (list "DIRECTIVE" directive))
   (let ((input (open-input-string directive)))
     (parameterize ((rt.filename (and filename (string->path filename)))
                    (rt.section old-section)
@@ -88,7 +87,7 @@
 ;; We use a byte regexp to get better performance when matching against a port.
 (define section-re #px#"^(.*?)(/[*]{3,}koog)(.*?)([*]{3,}/)(.*?)(/[*]{3,}end[*]{3,}/)")
 
-;;(write-nl (regexp-match section-re "foo bar /***koog my directive ***/ my region /***end***/"))
+;;(writeln (regexp-match section-re "foo bar /***koog my directive ***/ my region /***end***/"))
 
 (define lf-byte (bytes-ref #"\n" 0))
 
@@ -100,14 +99,12 @@
   (define modified #f)
 
   ;; (make-base-empty-namespace) includes so little that even literal
-  ;; use or function application does not appear to be allowed.
+  ;; use or function application is not defined. This gives us
+  ;; racket/base.
   (define ns (make-base-namespace))
 
   (begin
-    (namespace-attach-module
-     (current-namespace)
-     'koog/runtime
-     ns)
+    (namespace-attach-module (current-namespace) 'koog/runtime ns)
     (parameterize ((current-namespace ns))
       (namespace-require 'koog/runtime)))
   
@@ -199,7 +196,7 @@
          (modified (modify-data-in-stream input output
                                           filename logstream)))
     (when (and modified (not a-output))
-      (unless (be-quiet?) (display-nl filename))
+      (unless (be-quiet?) (displayln filename))
       (call-with-output-file
           filename
         (lambda (file-output)

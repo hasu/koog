@@ -9,8 +9,8 @@
 (provide main)
 
 (define (main)
-  ;; (write-nl (find-system-path 'run-file)) ;; program name
-  ;; (write-nl (current-command-line-arguments)) ;; args
+  ;; (writeln (find-system-path 'run-file)) ;; program name
+  ;; (writeln (current-command-line-arguments)) ;; args
 
   (define from-stdin (make-parameter #f)) ;; #f ==> from file
   (define out-stream (make-parameter #f)) ;; #f ==> to file
@@ -43,7 +43,7 @@
       (out-stream (open-output-nowhere))))
    #:args file (set! files file))
   
-  ;;(write-nl (list files (only-on-line)))
+  ;;(writeln (list files (only-on-line)))
 
   (if (from-stdin)
       (koog-expand (current-input-port)

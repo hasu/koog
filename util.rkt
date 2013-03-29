@@ -31,20 +31,10 @@
        (define-syntax name body ...)
        (provide name)))))
 
-(define-syntax* thunk
-  (syntax-rules ()
-    ((_ body ...)
-     (lambda () body ...))))
-
-(define* write-nl
+(define* writeln
   (case-lambda
     ((datum) (begin (write datum) (newline)))
     ((datum out) (begin (write datum out) (newline out)))))
-
-(define* display-nl
-  (case-lambda
-    ((datum) (begin (display datum) (newline)))
-    ((datum out) (begin (display datum out) (newline out)))))
 
 ;; "Transfers" data from an input stream into an output stream.
 ;; 

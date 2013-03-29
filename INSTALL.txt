@@ -31,6 +31,9 @@ and now it should be possible to run
 
   koog --help
 
+On Windows you may have to write a different executable that invokes
+the 'main' function in the cli.rkt module.
+
 EMACS INTEGRATION SETUP
 
 To set up Koog for use within the Emacs editor, with the C++ language,

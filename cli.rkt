@@ -9,7 +9,7 @@
 
 (provide main)
 
-(define (main)
+(define (main . argv)
   ;; (writeln (find-system-path 'exec-file)) ;; interpreter name
   ;; (writeln (find-system-path 'run-file)) ;; program name
   ;; (writeln (current-command-line-arguments)) ;; args
@@ -21,6 +21,7 @@
   
   (command-line
    #:program (find-system-path 'run-file) ;; program name
+   #:argv argv
    #:once-each
    (("-d" "--diff")     "print a diff to STDOUT"
     (diff-stream (current-output-port)))

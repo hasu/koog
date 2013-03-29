@@ -5,10 +5,12 @@
 (require racket/port)
 (require racket/cmdline)
 (require "koog.rkt")
+(require "util.rkt")
 
 (provide main)
 
 (define (main)
+  ;; (writeln (find-system-path 'exec-file)) ;; interpreter name
   ;; (writeln (find-system-path 'run-file)) ;; program name
   ;; (writeln (current-command-line-arguments)) ;; args
 

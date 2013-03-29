@@ -1,16 +1,20 @@
 #lang racket
 
-;; This file implements the API of Koog, a code generator in the style
-;; of Cog. The primary difference is that the code generation
-;; definitions are given in Scheme. Also, it is possible to
-;; (re)generate just a particular region of code rather than all the
-;; regions in a file, while still evaluating all of the Scheme code in
-;; the file.
-;; 
-;; cogapp.py and whiteutils.py of Cog are a useful reference when
-;; implementing tools such as this.
-;; 
-;; This script requires PLT Scheme / Racket version 5.
+#|
+
+This file implements the API of Koog, a code generator in the style
+of Cog. The primary difference is that the code generation
+definitions are given in Scheme. Also, it is possible to
+(re)generate just a particular region of code rather than all the
+regions in a file, while still evaluating all of the Scheme code in
+the file.
+
+cogapp.py and whiteutils.py of Cog are a useful reference when
+implementing tools such as this.
+
+This script requires PLT Scheme / Racket version 5.
+
+|#
 
 (require racket/port)
 (require koog/runtime)

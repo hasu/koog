@@ -62,7 +62,7 @@ This script requires PLT Scheme / Racket version 5.
 ;;               what the user might want to do.
 ;; directive:: The directive to evaluate.
 ;; old-region:: Typically not required, but might be fun to write
-;;              directive that is a function of the old code.
+;;              a directive that is a function of the old code.
 ;; namespace:: The namespace in which to evaluate the code.
 ;; filename:: The input filename, or #f for none.
 (define (evaluate-section old-section directive old-region namespace filename)
@@ -89,14 +89,29 @@ This script requires PLT Scheme / Racket version 5.
 ;; Only the REGION part is modified by the compiler.
 
 ;; We use a byte regexp to get better performance when matching against a port.
-(define section-re #px#"^(.*?)(/[*]{3,}koog)(.*?)([*]{3,}/)(.*?)(/[*]{3,}end[*]{3,}/)")
+(define c-section-re #px#"^(.*?)(/[*]{3,}koog)(.*?)([*]{3,}/)(.*?)(/[*]{3,}end[*]{3,}/)")
 
-;;(writeln (regexp-match section-re "foo bar /***koog my directive ***/ my region /***end***/"))
+;;(writeln (regexp-match (comment-style) "foo bar /***koog my directive ***/ my region /***end***/"))
+
+(define (get-style-re s)
+  (let ((p (assq s style-list)))
+    (unless p
+      (error "unsupported comment style" s))
+    (cdr p)))
+
+(define* comment-style (make-parameter c-section-re get-style-re))
+
+(define style-list
+  `((c . ,c-section-re)))
 
 (define lf-byte (bytes-ref #"\n" 0))
 
 (define (bytes-count-lf bstr)
-  (for/fold ((count 0)) ((b bstr)) (if (equal? b lf-byte) (+ count 1) count)))
+  (for/fold ((count 0))
+      ((b bstr))
+    (if (equal? b lf-byte)
+        (+ count 1)
+        count)))
 
 ;; Relative module paths tend to be dynamically resolved relative to
 ;; (current-directory), so we resolve explicitly relative to this
@@ -136,7 +151,7 @@ This script requires PLT Scheme / Racket version 5.
     ;; 
     ;; Note that any non-matches will automatically be fed to
     ;; "output", which does happen to be handy in this case.
-    (let ((res (regexp-match section-re input 0 #f output)))
+    (let ((res (regexp-match (comment-style) input 0 #f output)))
       ;;(pretty-nl (list "RE RES" res))
       (when res
           (let* ((pre-section (second res))

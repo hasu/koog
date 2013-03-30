@@ -82,27 +82,51 @@ This script requires PLT Scheme / Racket version 5.
               (eval datum namespace))
             (loop)))))))
 
-;; Initially we only support one comment style, namely
+;; We support the C comment style
 ;;
-;; /***koog DIRECTIVE ***/ REGION /***end***/
+;;   /***koog DIRECTIVE ***/ REGION /***end***/
+;;
+;; and the Lisp comment style
+;;
+;;   ;***koog DIRECTIVE ;***
+;;   REGION ;***end
+;;
+;; or
+;;
+;;   ;***koog
+;;   ;
+;;   ; DIRECTIVE
+;;   ;
+;;   ;***
+;;   REGION
+;;   ;***end
+;;
+;; and similarly for Perl and TeX.
 ;;
 ;; Only the REGION part is modified by the compiler.
 
 ;; We use a byte regexp to get better performance when matching against a port.
-(define c-section-re #px#"^(.*?)(/[*]{3,}koog)(.*?)([*]{3,}/)(.*?)(/[*]{3,}end[*]{3,}/)")
+(define style-list
+  `((c
+     #px#"^(.*?)(/[*]{3,}koog)(.*?)([*]{3,}/)(.*?)(/[*]{3,}end[*]{3,}/)"
+     ,identity)
+    (lisp
+     #px#"^(.*?)(;+[*]{3,}koog)(.*?)(;+[*]{3,}[[:blank:]\r]*\n)(.*?)(;+[*]{3,}end)"
+     ,(lambda (x)
+        (regexp-replace* #px#"[[:blank:]\r]*\n[[:blank:]]*;+" x " ")))))
 
-;;(writeln (regexp-match (comment-style) "foo bar /***koog my directive ***/ my region /***end***/"))
+;;(regexp-match (second (assq 'c style-list)) "foo bar /***koog my directive ***/ my region /***end***/")
+;;(regexp-match (second (assq 'lisp style-list)) "foo bar ;***koog my directive ;***\n my region ;***end")
+;;(regexp-match (second (assq 'lisp style-list)) "foo bar ;***koog my directive\r\n ; directive continues ;***\r\n my region ;***end")
 
-(define (get-style-re s)
+(define (validate-get-style s)
   (let ((p (assq s style-list)))
     (unless p
       (error "unsupported comment style" s))
-    (cdr p)))
+    p))
 
-(define* comment-style (make-parameter c-section-re get-style-re))
-
-(define style-list
-  `((c . ,c-section-re)))
+(define* comment-style (make-parameter (first style-list)
+                                       validate-get-style))
 
 (define lf-byte (bytes-ref #"\n" 0))
 
@@ -138,6 +162,10 @@ This script requires PLT Scheme / Racket version 5.
   ;; racket/base.
   (define ns (make-base-namespace))
 
+  (define style (comment-style))
+  (define style-re (second style))
+  (define dir-filt (third style))
+  
   (begin
     (namespace-attach-module (current-namespace) runtime-module-path ns)
     (parameterize ((current-namespace ns))
@@ -151,7 +179,7 @@ This script requires PLT Scheme / Racket version 5.
     ;; 
     ;; Note that any non-matches will automatically be fed to
     ;; "output", which does happen to be handy in this case.
-    (let ((res (regexp-match (comment-style) input 0 #f output)))
+    (let ((res (regexp-match style-re input 0 #f output)))
       ;;(pretty-nl (list "RE RES" res))
       (when res
           (let* ((pre-section (second res))
@@ -168,7 +196,7 @@ This script requires PLT Scheme / Racket version 5.
                    (middle-marker (third section-parts))
                    (region (fourth section-parts))
                    (end-marker (fifth section-parts))
-                   (directive-s (bytes->string/utf-8 directive))
+                   (directive-s (bytes->string/utf-8 (dir-filt directive)))
                    (region-s (bytes->string/utf-8 region))
                    (do-evaluate-section
                     (thunk

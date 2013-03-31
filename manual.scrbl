@@ -1,6 +1,6 @@
 #lang scribble/manual
 @(require scribble/basic scribble/core)
-@(require (for-label "koog.ss" "cli.ss" "runtime.ss" "util.ss"))
+@(require (for-label "koog.rkt" "cli.rkt" "runtime.rkt" "util.rkt"))
 
 @(require setup/getinfo)
 @(define info (get-info (list "koog")))
@@ -11,7 +11,7 @@
 
 @emph{Mixed-code generation} is a form of template-based code generation where the template file is overwritten with the generated file, with the code generation directives intact. The term was (as far as we know) introduced by Jack Herrington in his book Code Generation in Action (Manning, 2003).
 
-Koog can function as a traditional mixed-code generator for a host language that uses C language style comments. Koog also supports a restricted form of mixed-code generation where only specific regions of the source file are actually regenerated.
+Koog can function as a traditional mixed-code generator for a host language that uses one of the supported set of code styles (currently C block comments, or Lisp, Ruby, or TeX line comments). Koog also supports a restricted form of mixed-code generation where only specific regions of the source file are actually regenerated.
 
 @section[#:tag "terminology"]{Terminology}
 
@@ -24,7 +24,7 @@ We define related terminology as follows:
 @section[#:tag "features"]{Features}
 
 @(itemlist
-  @item{Supports PLT Scheme version 4 and Racket (PLT Scheme version 5).}
+  @item{Supports Racket (PLT Scheme) version 5.}
   @item{Includes a Scheme API, command-line interface, and Emacs/Vim editor integration.}
   (item "It is possible to:"
   (itemlist
@@ -39,11 +39,11 @@ We define related terminology as follows:
 
 The provided APIs are fairly self-explanatory, so look at the source code. 
 
-The primary module is @hyperlink["../src/koog.ss"]{@racket[koog/koog]}, which exports the @racket[koog-expand] function, and some parameters affecting its behavior.
+The primary module is @hyperlink["../src/koog.rkt"]{@racket[koog/koog]}, which exports the @racket[koog-expand] function, and some parameters affecting its behavior.
 
-The @hyperlink["../src/cli.ss"]{@racket[koog/cli]} module only exports a @racket[main] function that parses command-line options and accordingly sets parameters for @racket[koog-expand] prior to invoking it.
+The @hyperlink["../src/cli.rkt"]{@racket[koog/cli]} module only exports a @racket[main] function that parses command-line options and accordingly sets parameters for @racket[koog-expand] prior to invoking it.
 
-The @hyperlink["../src/runtime.ss"]{@racket[koog/runtime]} module exports parameters that make context information available to code generation directives. It is not necessary for directives to explicitly @racket[require] this module.
+The @hyperlink["../src/runtime.rkt"]{@racket[koog/runtime]} module exports parameters that make context information available to code generation directives. It is not necessary for directives to explicitly @racket[require] this module.
 
 @section[#:tag "examples"]{Examples}
 

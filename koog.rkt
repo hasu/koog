@@ -113,7 +113,15 @@ This script requires PLT Scheme / Racket version 5.
     #"[*]{3,}[[:blank:]\r]*\n)(.*?)(" pat
     #"[*]{3,}end)")))
 
-(define (mk-filter pat)
+(define (mk-block-cmt-re o-pat c-pat)
+  (byte-pregexp
+   (bytes-append
+    #"^(.*?)(" o-pat
+    #"[*]{3,}koog)(.*?)([*]{3,}" c-pat
+    #")(.*?)(" o-pat
+    #"[*]{3,}end[*]{3,}" c-pat #")")))
+
+(define (mk-line-cmt-filt pat)
   (let ((re (byte-pregexp
              (bytes-append
               #"[[:blank:]\r]*\n[[:blank:]]*" pat))))
@@ -121,17 +129,21 @@ This script requires PLT Scheme / Racket version 5.
       (regexp-replace* re x " "))))
 
 (define (mk-line-cmt-style name pat)
-  (list name (mk-line-cmt-re pat) (mk-filter pat)))
+  (list name (mk-line-cmt-re pat) (mk-line-cmt-filt pat)))
+
+(define (mk-block-cmt-style name o-pat c-pat)
+  (list name (mk-block-cmt-re o-pat c-pat) identity))
 
 ;; We use a byte regexp to get better performance when matching against a port.
 (define style-list
-  `((c
-     #px#"^(.*?)(/[*]{3,}koog)(.*?)([*]{3,}/)(.*?)(/[*]{3,}end[*]{3,}/)"
-     ,identity)
+  `(,(mk-block-cmt-style 'c #"/" #"/")
+    ,(mk-block-cmt-style 'racket #"#[|]" #"[|]#")
     ,(mk-line-cmt-style 'lisp #";+")
     ,(mk-line-cmt-style 'sh #"#+")
     ,(mk-line-cmt-style 'tex #"%+")))
 
+;#px#"^(.*?)(#[|][*]{3,}koog)(.*?)([*]{3,}[|]#)(.*?)(#[|][*]{3,}end[*]{3,}[|]#)"
+;#px#"^(.*?)(/[*]{3,}koog)(.*?)([*]{3,}/)(.*?)(/[*]{3,}end[*]{3,}/)"
 ;#px#"^(.*?)(;+[*]{3,}koog)(.*?)(;+[*]{3,}[[:blank:]\r]*\n)(.*?)(;+[*]{3,}end)"
 ;(lambda (x) (regexp-replace* #px#"[[:blank:]\r]*\n[[:blank:]]*;+" x " "))
     

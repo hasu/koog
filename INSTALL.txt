@@ -58,6 +58,15 @@ Having done this, in the C++ mode you should be able to insert Koog
 markers with the command C-o m i, and so forth. See the koog.el file
 for more information.
 
+For languages without C style comments you will want to customize some
+of the variables defined by koog.el, probably in the mode "hook" in
+order to make the customizations buffer local. For a TeX mode, for
+example, you might specify
+
+  (setq koog-comment-style "tex")
+  (setq koog-open-marker "%***koog ")
+  (setq koog-close-marker " %***\n%***end")
+
 VIM INTEGRATION SETUP
 
 To set up Koog for use within the Vim editor, you might add something

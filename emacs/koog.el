@@ -1,3 +1,12 @@
+(defvar koog-comment-style "c"
+  "Comment style")
+
+(defvar koog-open-marker "/***koog "
+  "Open marker string")
+
+(defvar koog-close-marker " ***//***end***/"
+  "Close marker string")
+
 (defun get-current-line ()
   (+ (count-lines (point-min) (point))
      (if (= (current-column) 0) 1 0)))
@@ -6,7 +15,8 @@
   (let ((oldpoint (point)))
     (shell-command-on-region 
      (point-min) (point-max)
-     (format cmd buffer-file-name) nil t)
+     (format cmd koog-comment-style buffer-file-name) 
+     nil t)
     (if (and (>= oldpoint (point-min))
 	     (<= oldpoint (point-max)))
 	(goto-char oldpoint))))
@@ -15,32 +25,33 @@
   (let ((oldpoint (point)))
     (shell-command-on-region 
      (point-min) (point-max)
-     (format cmd buffer-file-name (get-current-line)) nil t)
+     (format cmd koog-comment-style buffer-file-name (get-current-line)) 
+     nil t)
     (if (and (>= oldpoint (point-min))
 	     (<= oldpoint (point-max)))
 	(goto-char oldpoint))))
 
 (defun koog-filter-buffer/whole/ia ()
   (interactive)
-  (koog-filter-buffer/whole "koog -i -o -f %s"))
+  (koog-filter-buffer/whole "koog -c %s -i -o -f %s"))
 
 (defun koog-filter-buffer/point/ia ()
   (interactive)
-  (koog-filter-buffer/point "koog -i -o -f %s -l %d"))
+  (koog-filter-buffer/point "koog -c %s -i -o -f %s -l %d"))
 
 (defun koog-filter-buffer/remove/whole/ia ()
   (interactive)
-  (koog-filter-buffer/whole "koog -r -i -o -f %s"))
+  (koog-filter-buffer/whole "koog -c %s -r -i -o -f %s"))
 
 (defun koog-filter-buffer/remove/point/ia ()
   (interactive)
-  (koog-filter-buffer/point "koog -r -i -o -f %s -l %d"))
+  (koog-filter-buffer/point "koog -c %s -r -i -o -f %s -l %d"))
 
 (defun koog-insert-markers/ia ()
   (interactive)
-  (insert "/***koog ")
+  (insert koog-open-marker)
   (save-excursion
-    (insert " ***//***end***/")))
+    (insert koog-close-marker)))
 
 ;; A keymap you might optionally use, with bindings similar to the
 ;; ones for Vim. The Vim prefix is "m", you choose the prefix for

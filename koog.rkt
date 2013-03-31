@@ -105,16 +105,36 @@ This script requires PLT Scheme / Racket version 5.
 ;;
 ;; Only the REGION part is modified by the compiler.
 
+(define (mk-line-cmt-re pat)
+  (byte-pregexp
+   (bytes-append
+    #"^(.*?)(" pat
+    #"[*]{3,}koog)(.*?)(" pat
+    #"[*]{3,}[[:blank:]\r]*\n)(.*?)(" pat
+    #"[*]{3,}end)")))
+
+(define (mk-filter pat)
+  (let ((re (byte-pregexp
+             (bytes-append
+              #"[[:blank:]\r]*\n[[:blank:]]*" pat))))
+    (lambda (x)
+      (regexp-replace* re x " "))))
+
+(define (mk-line-cmt-style name pat)
+  (list name (mk-line-cmt-re pat) (mk-filter pat)))
+
 ;; We use a byte regexp to get better performance when matching against a port.
 (define style-list
   `((c
      #px#"^(.*?)(/[*]{3,}koog)(.*?)([*]{3,}/)(.*?)(/[*]{3,}end[*]{3,}/)"
      ,identity)
-    (lisp
-     #px#"^(.*?)(;+[*]{3,}koog)(.*?)(;+[*]{3,}[[:blank:]\r]*\n)(.*?)(;+[*]{3,}end)"
-     ,(lambda (x)
-        (regexp-replace* #px#"[[:blank:]\r]*\n[[:blank:]]*;+" x " ")))))
+    ,(mk-line-cmt-style 'lisp #";+")
+    ,(mk-line-cmt-style 'sh #"#+")
+    ,(mk-line-cmt-style 'tex #"%+")))
 
+;#px#"^(.*?)(;+[*]{3,}koog)(.*?)(;+[*]{3,}[[:blank:]\r]*\n)(.*?)(;+[*]{3,}end)"
+;(lambda (x) (regexp-replace* #px#"[[:blank:]\r]*\n[[:blank:]]*;+" x " "))
+    
 ;;(regexp-match (second (assq 'c style-list)) "foo bar /***koog my directive ***/ my region /***end***/")
 ;;(regexp-match (second (assq 'lisp style-list)) "foo bar ;***koog my directive ;***\n my region ;***end")
 ;;(regexp-match (second (assq 'lisp style-list)) "foo bar ;***koog my directive\r\n ; directive continues ;***\r\n my region ;***end")

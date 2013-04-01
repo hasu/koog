@@ -161,6 +161,12 @@ This script requires PLT Scheme / Racket version 5.
 (define* comment-style (make-parameter (first style-list)
                                        validate-get-style))
 
+(define* (comment-style-names)
+  (map first style-list))
+
+(define* (default-comment-style-name)
+  (first (first style-list)))
+
 (define lf-byte (bytes-ref #"\n" 0))
 
 (define (bytes-count-lf bstr)

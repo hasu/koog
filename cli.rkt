@@ -23,8 +23,16 @@
    #:program (find-system-path 'run-file) ;; program name
    #:argv argv
    #:once-each
-   (("-c" "--style")    style "c (default), lisp, racket, sh, or tex"
-    (comment-style (string->symbol style)))
+   (("-c" "--style") =>
+    (lambda (style)
+      (comment-style (string->symbol style)))
+    (list (format
+           "~a (default: ~a)"
+           (apply string-append
+                  (add-between
+                   (map symbol->string
+                        (comment-style-names)) ", "))
+           (default-comment-style-name))))
    (("-d" "--diff")     "print a diff to STDOUT"
     (diff-stream (current-output-port)))
    (("-f" "--filename") filename  "filename for when from STDIN"

@@ -15,7 +15,8 @@
   (let ((oldpoint (point)))
     (shell-command-on-region 
      (point-min) (point-max)
-     (format cmd koog-comment-style buffer-file-name) 
+     (format cmd koog-comment-style
+	     (shell-quote-argument buffer-file-name))
      nil t)
     (if (and (>= oldpoint (point-min))
 	     (<= oldpoint (point-max)))
@@ -25,7 +26,8 @@
   (let ((oldpoint (point)))
     (shell-command-on-region 
      (point-min) (point-max)
-     (format cmd koog-comment-style buffer-file-name (get-current-line)) 
+     (format cmd koog-comment-style
+	     (shell-quote-argument buffer-file-name) (get-current-line))
      nil t)
     (if (and (>= oldpoint (point-min))
 	     (<= oldpoint (point-max)))

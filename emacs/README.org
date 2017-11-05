@@ -1,0 +1,22 @@
+* Emacs Integration Setup
+
+  To set up Koog for use within the Emacs editor, with the C++ language, say, you might add something like the following to your "~/.emacs" file:
+  #+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "/path/to/koog/emacs")
+
+  (require 'koog)
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (define-key c++-mode-map [(control o) (m)]
+                'koog-map-prefix)))
+  #+END_SRC
+
+  Having done this, in the C++ mode you should be able to insert Koog markers with the command C-o m i, and so forth. See the "koog.el" file for more information.
+
+  For languages without C style comments you will want to customize some of the variables defined by "koog.el", probably in the mode "hook" in order to make the customizations buffer local. For a TeX mode, for example, you might specify
+  #+BEGIN_SRC emacs-lisp
+  (setq koog-comment-style "tex")
+  (setq koog-open-marker "%***koog ")
+  (setq koog-close-marker " %***\n%***end")
+  #+END_SRC

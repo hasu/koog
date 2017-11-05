@@ -1,7 +1,13 @@
-#lang racket
+#lang racket/base
 
-;; Utilities used internally in the implementation of Koog. Should be
-;; considered a non-public API, subject to change at any time.
+#|
+
+Utilities used internally in the implementation of Koog. Should be
+considered a non-public API, subject to change at any time.
+
+|#
+
+(require (for-syntax racket/base))
 
 (provide define* define-syntax*)
 
@@ -31,6 +37,7 @@
        (define-syntax name body ...)
        (provide name)))))
 
+;; This is available in Racket from version 6.1.1.8.
 (define* writeln
   (case-lambda
     ((datum) (begin (write datum) (newline)))

@@ -1,24 +1,26 @@
-#lang racket
+#lang racket/base
 
 #|
 
 This file implements the API of Koog, a code generator in the style
 of Cog. The primary difference is that the code generation
-definitions are given in Scheme. Also, it is possible to
+definitions are given in Racket. Also, it is possible to
 (re)generate just a particular region of code rather than all the
-regions in a file, while still evaluating all of the Scheme code in
+regions in a file, while still evaluating all of the Racket code in
 the file.
 
-cogapp.py and whiteutils.py of Cog are a useful reference when
-implementing tools such as this.
+The cogapp.py and whiteutils.py source files of Cog are a useful
+reference when implementing tools such as this.
 
-This script requires PLT Scheme / Racket version 5.
+This module requires PLT Scheme / Racket version 5 or higher.
 
 |#
 
-(require racket/port)
-(require "runtime.rkt")
-(require "util.rkt")
+(require racket/function
+         racket/list
+         racket/port
+         "runtime.rkt"
+         "util.rkt")
 
 (stdout (current-output-port))
 (stderr (current-error-port))
@@ -137,9 +139,9 @@ This script requires PLT Scheme / Racket version 5.
 ;; We use a byte regexp to get better performance when matching against a port.
 (define style-list
   `(,(mk-block-cmt-style 'c #"/" #"/")
+    ,(mk-line-cmt-style 'lisp #";+")
     ,(mk-block-cmt-style 'racket #"#[|]" #"[|]#"
                          #"[[:space:]]#[|]" #"[|]#[[:space:]]")
-    ,(mk-line-cmt-style 'lisp #";+")
     ,(mk-line-cmt-style 'sh #"#+")
     ,(mk-line-cmt-style 'tex #"%+")))
 
@@ -155,7 +157,9 @@ This script requires PLT Scheme / Racket version 5.
 (define (validate-get-style s)
   (let ((p (assq s style-list)))
     (unless p
-      (error "unsupported comment style" s))
+      (error 'validate-get-style
+             "unsupported comment style: ~a not in ~a"
+             s (map car style-list)))
     p))
 
 (define* comment-style (make-parameter (first style-list)
@@ -273,12 +277,12 @@ This script requires PLT Scheme / Racket version 5.
                                   (filename/log
                                    (or filename "<stdin>")))
                               (display
-                               (format "~a:~a:\"\"\"" filename/log num)
+                               (format "~a:~a:«" filename/log num)
                                logstream))
                             (write-bytes region logstream)
-                            (display "\"\"\" -> \"\"\"" logstream)
+                            (display "» --> «" logstream)
                             (write-string new-region-s logstream)
-                            (display "\"\"\"" logstream)
+                            (display "»" logstream)
                             (when just-region?
                               (display " (markers removed)" logstream))
                             (newline logstream))

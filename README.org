@@ -1,0 +1,3 @@
+This is Koog, a mixed-code generation tool that supports some common
+comment syntax styles, and assumes that code-generation directives are
+written in Racket.

@@ -1,11 +1,10 @@
 *.exe
-*.zo
 *~
+.dir-locals.el
+compiled/
 dist/
 doc/
-info.rkt
 local.mk
 manual/
-paper/
 retired/
 web/

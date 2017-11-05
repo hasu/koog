@@ -1,7 +1,11 @@
 #lang racket/base
 
-;; This module defines the "runtime library" for Koog directives.
-;; These exports will be available without an explicit "require".
+#|
+
+This module defines the "runtime library" for Koog directives.
+These exports will be available without an explicit `require`.
+
+|#
 
 (define stdout (make-parameter #f))
 (define stderr (make-parameter #f))

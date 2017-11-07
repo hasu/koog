@@ -37,12 +37,6 @@ considered a non-public API, subject to change at any time.
        (define-syntax name body ...)
        (provide name)))))
 
-;; This is available in Racket from version 6.1.1.8.
-(define* writeln
-  (case-lambda
-    ((datum) (begin (write datum) (newline)))
-    ((datum out) (begin (write datum out) (newline out)))))
-
 ;; "Transfers" data from an input stream into an output stream.
 ;; 
 ;; Code from Swindle served as an example for this.

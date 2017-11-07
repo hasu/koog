@@ -26,7 +26,7 @@ check-pkg-deps :
 web :
 	-rm -r web
 	mkdir -p web/manual
-	cp -a LICENSE INSTALL.txt index.html web/
+	cp -a LICENSE index.html web/
 	scribble ++main-xref-in --redirect-main http://docs.racket-lang.org/ --html --dest web/manual --dest-name index.html scribblings/koog.scrbl
 	chmod -R a+rX web
 	tidy -utf8 -eq web/index.html
